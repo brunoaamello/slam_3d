@@ -8,6 +8,7 @@
 #include <queue>
 #include <ctime>
 #include <iostream>
+#include <mutex>
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
@@ -24,6 +25,7 @@ class Scanner_T{
         queue _scan_queue;
         time_t _start_time;
         numeric _time_offset;
+        std::mutex _queue_mutex;
         ros::NodeHandle* _node;
         ros::Subscriber _subscriber;
 
@@ -34,7 +36,10 @@ class Scanner_T{
             elapsed_time += _time_offset;
 
             Scan* scan = new Scan(elapsed_time, scan_data);
+
+            _queue_mutex.lock();
             _scan_queue.push(scan);
+            _queue_mutex.unlock();
 
             if(_scan_queue.size() > _queue_size){
                 std::cerr << "Scanner queue full, discarding data!" << std::endl;
@@ -42,8 +47,6 @@ class Scanner_T{
             }else if(_scan_queue.size() == _queue_warning){
                 std::cerr << "Scanner queue reached warning level!" << std::endl;
             }
-            
-            std::cout << scan->getDataString() << std::endl;
 
         }
 
@@ -62,8 +65,10 @@ class Scanner_T{
             }
         }
         Scan* getScan(){
+            _queue_mutex.lock();
             Scan* front = _scan_queue.front();
             _scan_queue.pop();
+            _queue_mutex.unlock();
             return front;
         }
         unsigned queueSize(){

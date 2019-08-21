@@ -21,11 +21,12 @@ using Scanner = Scanner_T<fp>;
 
 void runner(Scanner* my_scanner){
     Scan* local_scan;
+    std::string data_string;
     while(true){
         if(my_scanner->queueSize() > 0){
             local_scan = my_scanner->getScan();
-            std::cout << local_scan->getDataString() << std::endl;
-            usleep(10000); // Used to avoid race condition between cout and delete
+            data_string = local_scan->getDataString();
+            std::cout << data_string << std::endl;
             delete local_scan;
         }
     }
