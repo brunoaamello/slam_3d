@@ -45,7 +45,11 @@ class Point_T{
         numeric z() const{
             return _z;
         }
-        
+        const std::string str() const{
+            std::stringstream ss;
+            ss << "[" << x() << ", " << y() << ", " << z() << "]";
+            return ss.str();
+        }
 
         // Static functions
         static const numeric dot(const Point_T a, const Point_T b){
@@ -57,6 +61,29 @@ class Point_T{
             numeric local_z = (a.x()*b.y())-(a.y()*b.x());
             return Point_T(local_x, local_y, local_z);
         }
+        static const numeric norm(const Point_T a){
+            return std::sqrt(Point_T::dot(a, a));
+        }
+        static const Point_T normal(const Point_T a, const Point_T b){
+            Point_T local_point = a.cross(b);
+            return local_point/local_point.norm();
+        }
+        static const Angle angle(const Point_T a, const Point_T b){
+            numeric cosine = a.dot(b)/(a.norm()*b.norm());
+            return Angle::arccosine(cosine);
+        }
+        // Specified functions
+        numeric dot(const Point_T a) const{
+            return Point_T::dot(*this, a);
+        }
+        Point_T cross(const Point_T a) const{
+            return Point_T::cross(*this, a);
+        }
+        numeric norm() const{
+            return Point_T::norm(*this);
+        }
+
+
 
         // Assignment operators
         Point_T& operator+=(Point_T a){

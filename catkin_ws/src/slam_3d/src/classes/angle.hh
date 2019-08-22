@@ -68,17 +68,17 @@ class Angle_T{
         static const numeric tangent(const numeric a){
             return std::tan(a);
         }
-        static const numeric arccosine(const numeric a){
-            return _acos(a);
+        static const Angle_T arccosine(const numeric a){
+            return Angle_T(_acos(a));
         }
-        static const numeric arcsine(const numeric a){
-            return _asin(a);
+        static const Angle_T arcsine(const numeric a){
+            return Angle_T(_asin(a));
         }
-        static const numeric arctangent(const numeric a){
-            return std::atan(a);
+        static const Angle_T arctangent(const numeric a){
+            return Angle_T(std::atan(a));
         }
-        static const numeric unwrapAngle(const numeric a){
-            return _unwrap(a);
+        static const Angle_T unwrapAngle(const numeric a){
+            return Angle_T(_unwrap(a));
         }
         
 
@@ -148,15 +148,6 @@ class Angle_T{
         }
         const numeric tan() const{
             return tangent(_angle);
-        }
-        const numeric acos() const{
-            return arccosine(_angle);
-        }
-        const numeric asin() const{
-            return arcsine(_angle);
-        }
-        const numeric atan() const{
-            return arctangent(_angle);
         }
         const numeric unwrap() const{
             _angle = unwrapAngle(_angle);
