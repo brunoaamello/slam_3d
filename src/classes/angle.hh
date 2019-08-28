@@ -1,56 +1,25 @@
 #ifndef ANGLE_TYPE
 #define ANGLE_TYPE
 
+// External libraries
 #include <cmath>
 #include <stdexcept>
 
 template<class numeric>
 class Angle_T{
+    // public attributes
+    public:
+        static constexpr numeric pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273;
+    
+    // private attributes
     private:
         numeric _angle;
 
+    // public functions
     public:
-        static constexpr numeric pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273;
-
-    private:
-        static const numeric _modulo(const numeric a, const numeric b){
-            if(b == 0.0){
-                throw std::domain_error("Division by 0!");
-            }
-            numeric local_a = a;
-            bool negative = false;
-            if(local_a<0.0){
-                negative = true;
-                local_a = -local_a;
-            }
-            while(local_a>=b){
-                local_a -= b;
-            }
-            if(negative){
-                local_a = -local_a;
-            }
-            return local_a;
+        Angle_T(numeric a = 0){
+            _angle = a;
         }
-        static const numeric _acos(const numeric a){
-            if(-1 > a || a > 1){
-                throw std::out_of_range("Cosine out of [-1,1]");
-            }
-            return std::acos(a);
-        }
-        static const numeric _asin(const numeric a){
-            if(-1 > a || a > 1){
-                throw std::out_of_range("Sine out of [-1,1]");
-            }
-            return std::asin(a);
-        }
-        static const numeric _unwrap(const numeric a){
-            numeric local_a = _modulo(a, 2*pi);
-            if(local_a < 0.0){
-                local_a += 2*pi;
-            }
-            return local_a;
-        }
-    public:
 
         // Static functions
         static const numeric toDeg(const numeric a){
@@ -83,9 +52,6 @@ class Angle_T{
         
 
         // Assignment operators
-        Angle_T(numeric a = 0){
-            _angle = a;
-        }
         Angle_T& operator=(numeric a){
             _angle = a;
         }
@@ -152,6 +118,46 @@ class Angle_T{
         const numeric unwrap() const{
             _angle = unwrapAngle(_angle);
             return _angle;
+        }
+    
+    // private functions
+    private:
+        static const numeric _modulo(const numeric a, const numeric b){
+            if(b == 0.0){
+                throw std::domain_error("Division by 0!");
+            }
+            numeric local_a = a;
+            bool negative = false;
+            if(local_a<0.0){
+                negative = true;
+                local_a = -local_a;
+            }
+            while(local_a>=b){
+                local_a -= b;
+            }
+            if(negative){
+                local_a = -local_a;
+            }
+            return local_a;
+        }
+        static const numeric _acos(const numeric a){
+            if(-1 > a || a > 1){
+                throw std::out_of_range("Cosine out of [-1,1]");
+            }
+            return std::acos(a);
+        }
+        static const numeric _asin(const numeric a){
+            if(-1 > a || a > 1){
+                throw std::out_of_range("Sine out of [-1,1]");
+            }
+            return std::asin(a);
+        }
+        static const numeric _unwrap(const numeric a){
+            numeric local_a = _modulo(a, 2*pi);
+            if(local_a < 0.0){
+                local_a += 2*pi;
+            }
+            return local_a;
         }
 
 };

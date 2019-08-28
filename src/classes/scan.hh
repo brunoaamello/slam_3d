@@ -1,23 +1,32 @@
 #ifndef SCAN_TYPE
-
 #define SCAN_TYPE
 
+// Own codes
 #include "angle.hh"
 
+// Ros libraries
+#include "sensor_msgs/LaserScan.h"
+
+// External libraries
 #include <vector>
 #include <tuple>
 #include <string>
-#include "sensor_msgs/LaserScan.h"
 
 template<class numeric>
 class Scan_T{
+    // aliases
     using Angle = Angle_T<numeric>;
+    // public attributes
+    public:
+
+    // private attributes
     private:
         numeric _scan_reception_time;
         std::vector<numeric> _time;
         std::vector<Angle> _angles;
         std::vector<numeric> _range;
 
+    // public functions
     public:
         Scan_T(numeric reception_time, const sensor_msgs::LaserScan scan_data){
             _scan_reception_time = reception_time;
@@ -54,7 +63,8 @@ class Scan_T{
 
             return ss.str();
         }
-
+    
+    // private functions
     private:
         void setScanData(const sensor_msgs::LaserScan scan_data){
             int count = floor((scan_data.angle_max-scan_data.angle_min)/scan_data.angle_increment);
@@ -76,8 +86,6 @@ class Scan_T{
                 angle += scan_data.angle_increment;
             }
         }
-
-
 
 };
 

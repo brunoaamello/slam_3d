@@ -1,16 +1,26 @@
 #ifndef POINT_TYPE
 #define POINT_TYPE
 
+// Own codes
+#include "angle.hh"
+
+// External libraries
 #include <cmath>
 
-#include "angle.hh"
 
 template<class numeric>
 class Point_T{
+    // aliases
     using Angle = Angle_T<numeric>;
+
+    // public attributes
+    public:
+
+    // private attributes
     private:
         numeric _x, _y, _z;    
 
+    // public functions
     public:
         Point_T(numeric x=0, numeric y=0, numeric z=0){
             _x = x;
@@ -45,11 +55,13 @@ class Point_T{
         numeric z() const{
             return _z;
         }
+        /*
         const std::string str() const{
             std::stringstream ss;
             ss << "[" << x() << ", " << y() << ", " << z() << "]";
             return ss.str();
         }
+        */
 
         // Static functions
         static const numeric dot(const Point_T a, const Point_T b){

@@ -1,62 +1,49 @@
 #ifndef SCANNER_TYPE
-
 #define SCANNER_TYPE
 
+// Own codes
 #include "angle.hh"
 #include "scan.hh"
 
-#include <queue>
-#include <ctime>
-#include <iostream>
-#include <mutex>
-
+// Ros libraries
 #include "ros/ros.h"
+#include "ros/time.h"
 #include "sensor_msgs/LaserScan.h"
 
+// External libraries
+#include <queue>
+#include <iostream>
+#include <mutex>
 
 
 template<class numeric>
 class Scanner_T{
+    // aliases
     using Scan = Scan_T<numeric>;
     using queue = std::queue<Scan*>;
+    using Time = ros::Time;
+    // public attributes
+    public:
+
+    // private attributes
     private:
         unsigned _queue_warning;
         unsigned _queue_size;
         queue _scan_queue;
-        time_t _start_time;
+        Time _start_time;
         numeric _time_offset;
         std::mutex _queue_mutex;
         ros::NodeHandle* _node;
         ros::Subscriber _subscriber;
 
-    private:
-        void scanCallback(const sensor_msgs::LaserScan scan_data){
-            time_t receive_time = std::time(NULL);
-            numeric elapsed_time = (numeric) std::difftime(receive_time, _start_time);
-            elapsed_time += _time_offset;
-
-            Scan* scan = new Scan(elapsed_time, scan_data);
-
-            _queue_mutex.lock();
-            _scan_queue.push(scan);
-            _queue_mutex.unlock();
-
-            if(_scan_queue.size() > _queue_size){
-                std::cerr << "Scanner queue full, discarding data!" << std::endl;
-                delete getScan();
-            }else if(_scan_queue.size() == _queue_warning){
-                std::cerr << "Scanner queue reached warning level!" << std::endl;
-            }
-
-        }
-
+    // public functions
     public:
         Scanner_T(ros::NodeHandle* n, const char* topic = "scan", unsigned q_size = 1024, unsigned q_warning = 128, numeric offset = 0){
             _node = n;
             _queue_size = q_size;
             _queue_warning = q_warning;
             _time_offset = offset;
-            _start_time = std::time(NULL);
+            _start_time = Time::now();
             _subscriber = _node->subscribe(topic, 1000, &Scanner_T::scanCallback, this);
         }
         ~Scanner_T(){
@@ -73,6 +60,28 @@ class Scanner_T{
         }
         unsigned queueSize(){
             return _scan_queue.size();
+        }
+
+    // private functions
+    private:
+        void scanCallback(const sensor_msgs::LaserScan scan_data){
+            Time receive_time = Time::now();
+            numeric elapsed_time = ((numeric)(receive_time.toNSec()-_start_time.toNSec()))/1e9;
+            elapsed_time += _time_offset;
+
+            Scan* scan = new Scan(elapsed_time, scan_data);
+
+            _queue_mutex.lock();
+            _scan_queue.push(scan);
+            _queue_mutex.unlock();
+
+            if(_scan_queue.size() > _queue_size){
+                std::cerr << "Scanner queue full, discarding data!" << std::endl;
+                delete getScan();
+            }else if(_scan_queue.size() == _queue_warning){
+                std::cerr << "Scanner queue reached warning level!" << std::endl;
+            }
+
         }
 };
 
