@@ -1,5 +1,6 @@
 // Own codes
 #include "classes/point.hh"
+#include "classes/vector.hh"
 #include "classes/angle.hh"
 #include "classes/scan.hh"
 #include "classes/scanner.hh"
@@ -18,6 +19,7 @@
 // Aliases
 using fp = double;
 using Point = Point_T<fp>;
+using Vector = Vector_T<fp>;
 using Angle = Angle_T<fp>;
 using Scan = Scan_T<fp>;
 using Scanner = Scanner_T<fp>;
@@ -30,9 +32,10 @@ int main(int argc, char **argv){
 
     ros::init(argc, argv, "slam_3d");
 
-    ros::NodeHandle n;
+    ros::NodeHandle n("node");
 
-    printf("This program does run.\n");
+    printf("This program does run.\n");  
+
 
     Scanner* my_scanner = new Scanner(&n, "scan");
 

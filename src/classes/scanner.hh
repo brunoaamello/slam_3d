@@ -30,20 +30,16 @@ class Scanner_T{
         unsigned _queue_warning;
         unsigned _queue_size;
         queue _scan_queue;
-        Time _start_time;
-        numeric _time_offset;
         std::mutex _queue_mutex;
         ros::NodeHandle* _node;
         ros::Subscriber _subscriber;
 
     // public functions
     public:
-        Scanner_T(ros::NodeHandle* n, const char* topic = "scan", unsigned q_size = 1024, unsigned q_warning = 128, numeric offset = 0){
+        Scanner_T(ros::NodeHandle* n, const char* topic = "scan", unsigned q_size = 1024, unsigned q_warning = 128){
             _node = n;
             _queue_size = q_size;
             _queue_warning = q_warning;
-            _time_offset = offset;
-            _start_time = Time::now();
             _subscriber = _node->subscribe(topic, 1000, &Scanner_T::scanCallback, this);
         }
         ~Scanner_T(){
@@ -66,8 +62,7 @@ class Scanner_T{
     private:
         void scanCallback(const sensor_msgs::LaserScan scan_data){
             Time receive_time = Time::now();
-            numeric elapsed_time = ((numeric)(receive_time.toNSec()-_start_time.toNSec()))/1e9;
-            elapsed_time += _time_offset;
+            numeric elapsed_time = ((numeric)receive_time.toNSec())/1e9;
 
             Scan* scan = new Scan(elapsed_time, scan_data);
 

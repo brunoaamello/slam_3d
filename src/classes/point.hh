@@ -63,38 +63,6 @@ class Point_T{
         }
         */
 
-        // Static functions
-        static const numeric dot(const Point_T a, const Point_T b){
-            return (a.x()*b.x())+(a.y()*b.y())+(a.z()*b.z());
-        }
-        static const Point_T cross(const Point_T a, const Point_T b){
-            numeric local_x = (a.y()*b.z())-(a.z()*b.y());
-            numeric local_y = (a.z()*b.x())-(a.x()*b.z());
-            numeric local_z = (a.x()*b.y())-(a.y()*b.x());
-            return Point_T(local_x, local_y, local_z);
-        }
-        static const numeric norm(const Point_T a){
-            return std::sqrt(Point_T::dot(a, a));
-        }
-        static const Point_T normal(const Point_T a, const Point_T b){
-            Point_T local_point = a.cross(b);
-            return local_point/local_point.norm();
-        }
-        static const Angle angle(const Point_T a, const Point_T b){
-            numeric cosine = a.dot(b)/(a.norm()*b.norm());
-            return Angle::arccosine(cosine);
-        }
-        // Specified functions
-        numeric dot(const Point_T a) const{
-            return Point_T::dot(*this, a);
-        }
-        Point_T cross(const Point_T a) const{
-            return Point_T::cross(*this, a);
-        }
-        numeric norm() const{
-            return Point_T::norm(*this);
-        }
-
 
 
         // Assignment operators
@@ -123,9 +91,6 @@ class Point_T{
             _y = std::pow(_y, a);
             _z = std::pow(_z, a);
         }
-        Point_T& operator^=(Point_T a){
-            *this = Point_T::cross(*this, a);
-        }
         
         // Arithmetic operators
         Point_T operator+(numeric a) const{
@@ -143,13 +108,6 @@ class Point_T{
         Point_T operator^(numeric a) const{
             return Point_T(std::pow(this->x(), a), std::pow(this->y(), a), std::pow(this->z(), a));
         }
-        Point_T operator^(Point_T a) const{
-            return Point_T::cross(this, a);
-        }
-        numeric operator*(Point_T a) const{
-            return Point_T::dot(this, a);
-        }
-        
 
 
 
