@@ -39,6 +39,11 @@ class Scan_T{
         const std::vector<numeric> getTimes() const{
             return _time;
         }
+
+        const int getLength() const {
+            return _time.size;
+        }
+
         const std::vector<Angle> getAngles() const{
             return _angles;
         }
