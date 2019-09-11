@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(slam_3d)
+project(scanner)
 
 ## Compile as C++17, supported in ROS Kinetic and newer
 add_compile_options(-std=c++17)
@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  sensor_msgs
   urg_node
 )
 
@@ -105,8 +106,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES slam_3d
-  CATKIN_DEPENDS roscpp rospy std_msgs urg_node
+  LIBRARIES scanner
+  CATKIN_DEPENDS roscpp rospy std_msgs urg_node sensor_msgs
   DEPENDS system_lib
 )
 
@@ -135,7 +136,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/slam_3d.cc)
+add_executable(${PROJECT_NAME}_node src/main.cc)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

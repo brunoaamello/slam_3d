@@ -30,9 +30,9 @@ void runner(Scanner* my_scanner);
 // Main
 int main(int argc, char **argv){
 
-    ros::init(argc, argv, "slam_3d");
+    ros::init(argc, argv, "scanner");
 
-    ros::NodeHandle n("node");
+    ros::NodeHandle n;
 
     printf("This program does run.\n");  
 

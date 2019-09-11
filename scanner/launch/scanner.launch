@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="slam_3d" type="node" name="slam_3d" output="screen"/>
+    <node pkg="scanner" type="node" name="scanner" output="screen"/>
     <node pkg="urg_node" type="urg_node" name="urg_node" output="screen"/>
 
 </launch>
