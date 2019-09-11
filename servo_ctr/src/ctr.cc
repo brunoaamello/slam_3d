@@ -13,11 +13,12 @@ int main(int argc, char **argv) {
 
     printf("Servo controller running, but not working!\n");
 
-    ros::Publisher chatter_pub = n.advertise<servo_ctr::servo_angle>("chatter", 1000);
+    ros::Publisher chatter_pub = n.advertise<servo_ctr::servo_angle>("servo_control", 1000);
     ros::Rate loop_rate(60);
 
     while(ros::ok()) {
         servo_ctr::servo_angle msg;
+        //TODO: controle do servo motor e geração da mensagem com dados reais
         msg.angle_degrees = 60;
         msg.angle_radians = 3.14159265358/3;
         msg.time = 1.00;
