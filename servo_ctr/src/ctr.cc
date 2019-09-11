@@ -1,9 +1,8 @@
 // Ros libraries
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "servo_ctr/servo_angle.h"
 
 // External libraries
-#include <sstream>
 #include <iostream>
 #include <thread>
 
@@ -14,15 +13,14 @@ int main(int argc, char **argv) {
 
     printf("Servo controller running, but not working!\n");
 
-    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+    ros::Publisher chatter_pub = n.advertise<servo_ctr::servo_angle>("chatter", 1000);
     ros::Rate loop_rate(60);
 
     while(ros::ok()) {
-        std_msgs::String msg;
-        std::stringstream ss;
-        ss << "Fake angle: 60.00";
-
-        msg.data = ss.str();
+        servo_ctr::servo_angle msg;
+        msg.angle_degrees = 60;
+        msg.angle_radians = 3.14159265358/3;
+        msg.time = 1.00;
 
         chatter_pub.publish(msg);
 

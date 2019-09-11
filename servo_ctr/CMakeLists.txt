@@ -203,3 +203,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(ctr src/ctr.cc)
+target_link_libraries(ctr ${catkin_LIBRARIES})
+add_dependencies(ctr servo_ctr_generate_messages_cpp)
