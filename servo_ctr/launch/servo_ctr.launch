@@ -1,3 +1,3 @@
 <launch>
-    <node pkg="scanner" type="node" name="servo_ctr" output="screen"/>
+    <node pkg="servo_ctr" type="node" name="ctr" output="screen"/>
 </launch>
