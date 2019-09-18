@@ -3,6 +3,7 @@
 
 // Own codes
 #include "angle.hh"
+#include "scanner/lidar_data.h"
 
 // Ros libraries
 #include "sensor_msgs/LaserScan.h"
@@ -67,6 +68,17 @@ class Scan_T{
             ss << "----------------------------------------" << std::endl;
 
             return ss.str();
+        }
+
+        const scanner::lidar_data getDataMessage() const {
+            scanner::lidar_data msg;
+            msg.size = _time.size();
+            for(unsigned i = 0; i < msg.size; i++) {
+                msg.time.push_back(_time[i]);
+                msg.angle.push_back(_angles[i].deg());
+                msg.range.push_back(_range[i]);
+            }
+            return msg;
         }
     
     // private functions
