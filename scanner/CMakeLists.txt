@@ -209,5 +209,8 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 # catkin_add_nosetests(test)
 
 add_executable(scanner src/main.cc)
+set_target_properties(scanner PROPERTIES
+  ENABLE_EXPORTS 1
+)
 target_link_libraries(scanner ${catkin_LIBRARIES})
 add_dependencies(scanner scanner_generate_messages_cpp)
