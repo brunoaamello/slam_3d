@@ -9,7 +9,6 @@
 #include "ros/ros.h"
 #include "ros/time.h"
 #include "sensor_msgs/LaserScan.h"
-#include "sensor_msgs/PointCloud2.h"
 
 // External libraries
 #include <queue>
@@ -57,15 +56,6 @@ class Scanner_T{
         }
         unsigned queueSize(){
             return _scan_queue.size();
-        }
-
-        sensor_msgs::PointCloud2 ScantoPointCloud(Scan scan) {
-            sensor_msgs::PointCloud2 msg;
-            msg.header = scan.getReceptionTime;
-            msg.is_dense = true;
-            msg.height = 1;
-            msg.width = scan.getLength();
-            //TODO
         }
 
     // private functions
