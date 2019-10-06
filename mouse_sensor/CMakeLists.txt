@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(mapper)
+project(mouse_sensor)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,11 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
-  scanner
-  servo_ctr
-  pcl_ros
-  pcl_conversions
-  #message_generation
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,11 +48,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   ../servo_ctr/msg/servo_angle.msg
-#   ../sensor/msg/lidar_data.msg
-# )
+add_message_files(
+  FILES
+  robot_position.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -73,10 +68,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,8 +104,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES mapper
-  CATKIN_DEPENDS roscpp servo_ctr scanner pcl_ros pcl
+  LIBRARIES mouse_sensor
+  CATKIN_DEPENDS roscpp sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
 
@@ -121,21 +116,12 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-   src/${PROJECT_NAME}/src/classes/ 
- include
- src/scanner/msg/
- src/servo_ctr/msg/
+  include
   ${catkin_INCLUDE_DIRS}
-  ${PCL_INCLUDE_DIRS}
 )
 
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/classes/mapper.cc
-# )
+add_library(mouse_sensor src/mouse_sensor.cc )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -145,7 +131,7 @@ add_definitions(${PCL_DEFINITIONS})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/mapper_node.cpp)
+add_executable(${PROJECT_NAME}_node src/mouse_sensor_node.cc)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,12 +141,14 @@ add_definitions(${PCL_DEFINITIONS})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+   mouse_sensor
+   X11
+)
 
 #############
 ## Install ##
@@ -209,16 +197,10 @@ add_definitions(${PCL_DEFINITIONS})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_mapper.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_mouse_sensor.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable(map src/map.cc)
-target_link_libraries(map ${catkin_LIBRARIES})
-target_link_libraries(map ${PCL_LIBRARIES})
-add_dependencies(map ${catkin_EXPORTED_TARGETS})
-#add_dependencies(map mapper_generate_messages_cpp)
