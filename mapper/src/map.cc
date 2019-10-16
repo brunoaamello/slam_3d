@@ -20,6 +20,8 @@ int main (int argc, char **argv) {
     ros::Publisher mapper_pub = n.advertise<pcl::PointCloud<pcl::PointXYZ> >("cloud_in", 10);
     ros::Rate loop_rate(0.5);
 
+    //rosrun tf static_transform_publisher 0 0 0 0 0 1 transform_reference  my_frame 100
+
     while(ros::ok()) {
         std::cout << "Numero de pacotes lidar: " << map.getLidarCount() << "\n";
         pcl::PointCloud<pcl::PointXYZ>::Ptr msg = map.getPointCloudMessage(&msgIsEmpty);

@@ -57,7 +57,7 @@ public:
 
         *isEmpty = false;
 
-        msg->header.frame_id = _pointcloud_id++;
+        msg->header.frame_id = "transform_reference";
         msg->height = 1;
         double num_points = 0;
 
@@ -77,7 +77,7 @@ public:
                 double theta = aux.angle.back();
                 x = d*sin(theta);
                 y = d*cos(theta);
-                msg->points.push_back(pcl::PointXYZ(x, y, 0.0));
+                msg->points.push_back(pcl::PointXYZ(x, y, 1.0));
                 aux.range.pop_back();
                 aux.angle.pop_back();
             }

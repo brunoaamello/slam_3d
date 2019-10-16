@@ -222,3 +222,8 @@ target_link_libraries(map ${catkin_LIBRARIES})
 target_link_libraries(map ${PCL_LIBRARIES})
 add_dependencies(map ${catkin_EXPORTED_TARGETS})
 #add_dependencies(map mapper_generate_messages_cpp)
+
+add_executable(sub_map src/subs_map.cc)
+target_link_libraries(sub_map ${catkin_LIBRARIES})
+target_link_libraries(sub_map ${PCL_LIBRARIES})
+add_dependencies(sub_map ${catkin_EXPORTED_TARGETS})
