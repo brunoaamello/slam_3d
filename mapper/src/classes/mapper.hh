@@ -32,7 +32,7 @@ public:
 
     void servoCallback(const servo_ctr::servo_angle &msg) {
         std::cout << "Receiving servo data: \n";
-        std::cout << "Angle: " << msg.angle_degrees << "\n";
+        std::cout << "Angle: " << msg.angle_radians << "\n";
         std::cout << "Time: " << msg.time << "\n";
         _servo_buffer.push_back(msg);
     };
