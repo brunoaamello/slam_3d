@@ -27,14 +27,18 @@ private:
     std::vector<mouse_sensor::robot_position> _mouse_buffer;
     double _pointcloud_id;
     double _lidar_count;
+    double _mouse_count;
 
 public:
     Mapper() {
         _pointcloud_id = 0;
         _lidar_count = 0;
+        _mouse_count = 0;
     };
 
     double getLidarCount() {return _lidar_count;}
+
+    double getMouseCount() {return _mouse_count;}
 
     void servoCallback(const servo_ctr::servo_angle &msg) {;
         _servo_buffer.push_back(msg);
@@ -46,7 +50,11 @@ public:
     };
     
     void mouseCallback(const mouse_sensor::robot_position &msg) {
+        if(_mouse_buffer.size() > 0 && (msg.x == _mouse_buffer.back().x && msg.y == _mouse_buffer.back().y && msg.z == _mouse_buffer.back().z)) {
+            return;
+        }
         _mouse_buffer.push_back(msg);
+        _mouse_count++;
         //std::cout << "[Mouse] Data received!\n";
     };
 
@@ -85,6 +93,9 @@ public:
                 double dy_robot = 0.0;
                 double dz_robot = 0.0;
                 int num_mouse_data = curr_mouse_buffer.size();
+                // TODO: tratar caso de um só pacote: o pacote inicial nunca é apagado
+                // Guardar na classe a posição atual do robô para o caso de não ter pacotes
+                // ou tirar filtro de pacotes
                 for(int k = num_mouse_data-1; k > 0; k--) {
                     if(curr_mouse_buffer[k].time == time) {
                         dx_robot = curr_mouse_buffer[k].x;
@@ -108,6 +119,8 @@ public:
                     }
 
                     curr_mouse_buffer.pop_back();
+                    _mouse_buffer.pop_back();
+                    _mouse_count--;
                 }
 
                 x = d*sin(theta);
