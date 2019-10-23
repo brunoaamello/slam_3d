@@ -4,6 +4,7 @@
 // Own codes
 #include "servo_ctr/servo_angle.h"
 #include "scanner/lidar_data.h"
+#include "mouse_sensor/robot_position.h"
 
 // Ros libs
 #include "ros/ros.h"
@@ -23,6 +24,7 @@ class Mapper {
 private:
     std::vector<servo_ctr::servo_angle> _servo_buffer;
     std::vector<scanner::lidar_data> _lidar_data;
+    std::vector<mouse_sensor::robot_position> _mouse_buffer;
     double _pointcloud_id;
     double _lidar_count;
 
@@ -34,10 +36,7 @@ public:
 
     double getLidarCount() {return _lidar_count;}
 
-    void servoCallback(const servo_ctr::servo_angle &msg) {
-        //std::cout << "Receiving servo data: \n";
-        //std::cout << "Angle: " << msg.angle_degrees << "\n";
-        //std::cout << "Time: " << msg.time << "\n";
+    void servoCallback(const servo_ctr::servo_angle &msg) {;
         _servo_buffer.push_back(msg);
     };
 
@@ -46,8 +45,11 @@ public:
         _lidar_count++;
     };
     
-    // Aparentemente mensagens publicadas do tipo PCL aparecem como
-    // PointCloud2 no ROS, de acordo com: http://wiki.ros.org/pcl_ros
+    void mouseCallback(const mouse_sensor::robot_position &msg) {
+        _mouse_buffer.push_back(msg);
+        //std::cout << "[Mouse] Data received!\n";
+    };
+
     pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloudMessage(bool *isEmpty) {
         PointCloud::Ptr msg (new PointCloud);
         if(_lidar_data.size() < 1) {
@@ -75,9 +77,42 @@ public:
             for(int j = 0; j < aux.size; j++) {
                 double d = aux.range.back();
                 double theta = aux.angle.back();
+                double time = aux.time.back();
+
+                // Procurar pelo elemento de mouse recebido no mesmo instante:
+                std::vector<mouse_sensor::robot_position> curr_mouse_buffer = _mouse_buffer;
+                double dx_robot = 0.0;
+                double dy_robot = 0.0;
+                double dz_robot = 0.0;
+                int num_mouse_data = curr_mouse_buffer.size();
+                for(int k = num_mouse_data-1; k > 0; k--) {
+                    if(curr_mouse_buffer[k].time == time) {
+                        dx_robot = curr_mouse_buffer[k].x;
+                        dy_robot = curr_mouse_buffer[k].y;
+                        dz_robot = curr_mouse_buffer[k].z;
+
+                        break;
+                    } else if(curr_mouse_buffer[k].time > time && curr_mouse_buffer[k-1].time < time) {
+                        double delta_time = curr_mouse_buffer[k].time-curr_mouse_buffer[k-1].time;
+                        double diff_time = time-curr_mouse_buffer[k-1].time;
+
+                        double ang_coef = (curr_mouse_buffer[k].x-curr_mouse_buffer[k-1].x)/delta_time;
+                        dx_robot = ang_coef*diff_time+curr_mouse_buffer[k-1].x;
+
+                        ang_coef = (curr_mouse_buffer[k].y-curr_mouse_buffer[k-1].y)/delta_time;
+                        dy_robot = ang_coef*diff_time+curr_mouse_buffer[k-1].y;
+
+                        ang_coef = (curr_mouse_buffer[k].z-curr_mouse_buffer[k-1].z)/delta_time;
+                        dz_robot = ang_coef*diff_time+curr_mouse_buffer[k-1].z;
+                        break;
+                    }
+
+                    curr_mouse_buffer.pop_back();
+                }
+
                 x = d*sin(theta);
                 y = d*cos(theta);
-                msg->points.push_back(pcl::PointXYZ(x, y, 1.0));
+                msg->points.push_back(pcl::PointXYZ(x+dx_robot, y+dy_robot, 1.0+dz_robot));
                 aux.range.pop_back();
                 aux.angle.pop_back();
             }

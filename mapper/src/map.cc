@@ -19,7 +19,8 @@ int main (int argc, char **argv) {
     ros::Subscriber sub_lidar = n.subscribe("/lidar_data", 1000000, &Mapper::lidarCallback, &map);
     ros::Subscriber sub_servo = n.subscribe("/servo_control", 1000, &Mapper::servoCallback, &map);
     ros::Publisher mapper_pub = n.advertise<pcl::PointCloud<pcl::PointXYZ> >("cloud_in", 10);
-    
+    ros::Subscriber sub_mouse = n.subscribe("/robot_position", 1000, &Mapper::mouseCallback, &map);
+
     // Para publicar a transformação de referencial:
     static tf::TransformBroadcaster br;
     tf::Transform transform;
