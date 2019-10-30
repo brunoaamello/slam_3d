@@ -11,16 +11,16 @@
 #include "sensor_msgs/LaserScan.h"
 
 // External libraries
-#include <queue>
+#include <array>
 #include <iostream>
 #include <mutex>
 
 
-template<class numeric>
+template<class numeric, unsigned queue_size = 1024>
 class Scanner_T{
     // aliases
     using Scan = Scan_T<numeric>;
-    using queue = std::queue<Scan*>;
+    using array = std::array<Scan*, queue_size>;
     using Time = ros::Time;
     // public attributes
     public:
@@ -28,38 +28,61 @@ class Scanner_T{
     // private attributes
     private:
         unsigned _queue_warning;
-        unsigned _queue_size;
-        queue _scan_queue;
+        array _scan_array;
+        unsigned _array_front, _array_back;
         std::mutex _queue_mutex;
         ros::NodeHandle* _node;
         ros::Subscriber _subscriber;
 
+
     // public functions
     public:
-        Scanner_T(ros::NodeHandle* n, const char* topic = "scan", unsigned q_size = 1024, unsigned q_warning = 128){
+        Scanner_T(ros::NodeHandle* n, const char* topic = "/scan", unsigned q_warning = 128){
             _node = n;
-            _queue_size = q_size;
+
+            _array_front = 0;
+            _array_back = 0;
+
             _queue_warning = q_warning;
             _subscriber = _node->subscribe(topic, 1000, &Scanner_T::scanCallback, this);
         }
         ~Scanner_T(){
-            while(!_scan_queue.empty()){
+            while(queueSize()>0){
                 delete getScan();
             }
         }
         Scan* getScan(){
             _queue_mutex.lock();
-            Scan* front = _scan_queue.front();
-            _scan_queue.pop();
+            Scan* front = _scan_array[_array_front];
+            incFront();
             _queue_mutex.unlock();
             return front;
         }
         unsigned queueSize(){
-            return _scan_queue.size();
+            unsigned size;
+            if(_array_back >= _array_front){
+                size = _array_back - _array_front;
+            }else{
+                size = (queue_size - _array_front) + _array_back;
+            }
         }
 
     // private functions
     private:
+        void incFront(){
+            _array_front++;
+            if(_array_front == queue_size){
+                _array_front = 0;
+            }
+        }
+
+        void incBack(){
+            _array_back++;
+            if(_array_back == queue_size){
+                _array_back = 0;
+            }
+        }
+
         void scanCallback(const sensor_msgs::LaserScan scan_data){
             Time receive_time = Time::now();
             numeric elapsed_time = ((numeric)receive_time.toNSec())/1e9;
@@ -67,15 +90,14 @@ class Scanner_T{
             Scan* scan = new Scan(elapsed_time, scan_data);
 
             _queue_mutex.lock();
-            _scan_queue.push(scan);
+            _scan_array[_array_back] = scan;
+            incBack();
             _queue_mutex.unlock();
 
-            if(_scan_queue.size() > _queue_size){
-                std::cerr << "Scanner queue full, discarding data!" << std::endl;
-                delete getScan();
-            }else if(_scan_queue.size() == _queue_warning){
+            if(queueSize() == _queue_warning){
                 std::cerr << "Scanner queue reached warning level!" << std::endl;
             }
+
 
         }
 };

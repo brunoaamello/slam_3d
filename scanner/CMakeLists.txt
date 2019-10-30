@@ -133,6 +133,13 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 #add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+
+### FOR PROFILING (need to set after catkin_package)
+#add_compile_options(-pg)
+#set(catkin_LIBRARIES ${catkin_LIBRARIES} -pg)
+###
+
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
@@ -152,6 +159,7 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
  target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
  )
+
 
 #############
 ## Install ##
