@@ -75,7 +75,7 @@ class Scan_T{
             msg.size = _time.size();
             for(unsigned i = 0; i < msg.size; i++) {
                 msg.time.push_back(_time[i]);
-                msg.angle.push_back(_angles[i].deg());
+                msg.angle.push_back(_angles[i].rad());
                 msg.range.push_back(_range[i]);
             }
             return msg;
