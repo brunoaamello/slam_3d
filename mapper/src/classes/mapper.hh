@@ -29,11 +29,14 @@ private:
     double _lidar_count;
     double _mouse_count;
 
+    ros::Time _mouse_timer_start;
+
 public:
     Mapper() {
         _pointcloud_id = 0;
         _lidar_count = 0;
         _mouse_count = 0;
+        _mouse_timer_start = ros::Time::now();
     };
 
     double getLidarCount() {return _lidar_count;}
@@ -50,12 +53,22 @@ public:
     };
     
     void mouseCallback(const mouse_sensor::robot_position &msg) {
-        if(_mouse_buffer.size() > 0 && (msg.x == _mouse_buffer.back().x && msg.y == _mouse_buffer.back().y && msg.z == _mouse_buffer.back().z)) {
+       /* if(_mouse_buffer.size() > 0 && (msg.x == _mouse_buffer.back().x && msg.y == _mouse_buffer.back().y && msg.z == _mouse_buffer.back().z)) {
+            return;
+        }*/
+        if(ros::Time::now().toSec() - _mouse_timer_start.toSec() > 5) {
+            _mouse_timer_start = ros::Time::now();
+
+            _mouse_buffer.clear();
+            _mouse_count = 0;
+
+            std::cout << "[MAPPER] Clearing mouse buffer\n";
+
             return;
         }
+
         _mouse_buffer.push_back(msg);
         _mouse_count++;
-        //std::cout << "[Mouse] Data received!\n";
     };
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloudMessage(bool *isEmpty) {
@@ -119,8 +132,8 @@ public:
                     }
 
                     curr_mouse_buffer.pop_back();
-                    _mouse_buffer.pop_back();
-                    _mouse_count--;
+                    //_mouse_buffer.pop_back();
+                    //_mouse_count--;
                 }
 
                 x = d*sin(theta);
