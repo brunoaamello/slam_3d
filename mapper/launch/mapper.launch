@@ -1,0 +1,9 @@
+<launch> 
+	<env name="GMON_OUT_PREFIX" value="urg_node" />
+	<node pkg="urg_node" type="urg_node" name="urg_node" output="screen"/>
+	<env name="GMON_OUT_PREFIX" value="scanner" /> 
+	<node pkg="scanner" type="scanner" name="scanner" output="screen"/>
+	<env name="GMON_OUT_PREFIX" value="mapper" />
+    <node pkg="mapper" type="map" name="mapper" output="screen"/> 
+    
+</launch>

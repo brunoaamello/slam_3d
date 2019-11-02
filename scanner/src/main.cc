@@ -26,7 +26,7 @@ using Scan = Scan_T<fp>;
 using Scanner = Scanner_T<fp>;
 
 // Function headers
-void runner(Scanner* my_scanner, ros::Publisher *pub);
+void runner(Scanner* my_scanner, ros::Publisher* pub);
 
 // Main
 int main(int argc, char **argv){
@@ -39,11 +39,15 @@ int main(int argc, char **argv){
     printf("This program does run.\n");  
 
 
-    Scanner* my_scanner = new Scanner(&n, "scan");
+    Scanner* my_scanner = new Scanner(&n, "/scan");
 
     std::thread myRunner(runner, my_scanner, &pub);
 
     ros::spin();
+
+    myRunner.join();
+
+    delete my_scanner;
 
 }
 
@@ -51,15 +55,19 @@ int main(int argc, char **argv){
 void runner(Scanner* my_scanner, ros::Publisher *pub){
     Scan* local_scan;
     std::string data_string;
+    ros::Rate thread_rate = ros::Rate(1000);
     
+
     while(ros::ok()){
         if(my_scanner->queueSize() > 0){
             local_scan = my_scanner->getScan();
             data_string = local_scan->getDataString();
-            std::cout << data_string << std::endl;
+            //std::cout << data_string << std::endl;
             pub->publish(local_scan->getDataMessage());
-            ros::spinOnce();
             delete local_scan;
+            ros::spinOnce();
+        }else{
+            thread_rate.sleep();
         }
     }
 }
