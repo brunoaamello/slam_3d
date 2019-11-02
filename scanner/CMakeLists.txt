@@ -108,7 +108,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES scanner
   CATKIN_DEPENDS roscpp rospy std_msgs urg_node sensor_msgs message_runtime
-  DEPENDS system_lib
+  #DEPENDS system_lib
 )
 
 ###########

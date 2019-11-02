@@ -55,6 +55,7 @@ int main(int argc, char **argv){
 void runner(Scanner* my_scanner, ros::Publisher *pub){
     Scan* local_scan;
     std::string data_string;
+    ros::Rate thread_rate = ros::Rate(1000);
     
 
     while(ros::ok()){
@@ -65,6 +66,8 @@ void runner(Scanner* my_scanner, ros::Publisher *pub){
             pub->publish(local_scan->getDataMessage());
             delete local_scan;
             ros::spinOnce();
+        }else{
+            thread_rate.sleep();
         }
     }
 }
