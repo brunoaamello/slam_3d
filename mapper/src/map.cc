@@ -29,7 +29,7 @@ int main (int argc, char **argv) {
     q.setRPY(0, 0, 0);
     transform.setRotation(q);
 
-    ros::Rate loop_rate(0.5);
+    ros::Rate loop_rate(2);
 
     while(ros::ok()) {
         //br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "transform_reference", "my_frame"));

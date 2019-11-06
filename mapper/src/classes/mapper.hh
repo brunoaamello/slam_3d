@@ -56,7 +56,7 @@ public:
        /* if(_mouse_buffer.size() > 0 && (msg.x == _mouse_buffer.back().x && msg.y == _mouse_buffer.back().y && msg.z == _mouse_buffer.back().z)) {
             return;
         }*/
-        if(ros::Time::now().toSec() - _mouse_timer_start.toSec() > 5) {
+        if(ros::Time::now().toSec() - _mouse_timer_start.toSec() > 3) {
             _mouse_timer_start = ros::Time::now();
 
             _mouse_buffer.clear();
