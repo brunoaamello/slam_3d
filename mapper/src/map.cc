@@ -32,7 +32,8 @@ int main (int argc, char **argv) {
     ros::Rate loop_rate(0.5);
 
     while(ros::ok()) {
-        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "transform_reference", "my_frame")); 
+        //br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "transform_reference", "my_frame"));
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "transform_reference", "map")); 
         std::cout << "Numero de pacotes lidar: " << map.getLidarCount() << "\n";
         std::cout << "Numero de pacotes mouse: " << map.getMouseCount() << "\n";
         pcl::PointCloud<pcl::PointXYZ>::Ptr msg = map.getPointCloudMessage(&msgIsEmpty);
