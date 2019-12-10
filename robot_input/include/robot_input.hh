@@ -35,7 +35,7 @@ class RobotInput{
 
     public:
         static constexpr double PI = 3.1415926536;
-        static constexpr double VELOCITY = 0.25; /// meters/second
+        static constexpr double VELOCITY = 1; /// meters/second
         static constexpr double ANGULAR_VELOCITY = PI/18.0; /// rad/second
 
         static const int forward_keycode = 25; // W
@@ -69,6 +69,6 @@ class RobotInput{
 
         void run();
 
-        robot_input::velocity_message getVelocityMsg() const;
+        robot_input::velocity_message getVelocityMsg();
 
 };
