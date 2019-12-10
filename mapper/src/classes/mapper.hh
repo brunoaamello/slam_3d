@@ -28,23 +28,40 @@ private:
     double _pointcloud_id;
     double _lidar_count;
     double _mouse_count;
+    double _servo_count;
 
     ros::Time _mouse_timer_start;
-
+    ros::Time _servo_timer_start;
 public:
     Mapper() {
         _pointcloud_id = 0;
         _lidar_count = 0;
         _mouse_count = 0;
+        _servo_count = 0;
         _mouse_timer_start = ros::Time::now();
+        _servo_timer_start = ros::Time::now();
     };
 
     double getLidarCount() {return _lidar_count;}
 
     double getMouseCount() {return _mouse_count;}
 
-    void servoCallback(const servo_ctr::servo_angle &msg) {;
+    double getServoCount() {return _servo_count;}
+
+    void servoCallback(const servo_ctr::servo_angle &msg) {
+        if(ros::Time::now().toSec() - _servo_timer_start.toSec() > 3) {
+            _servo_timer_start = ros::Time::now();
+
+            _servo_buffer.clear();
+            _servo_count = 0;
+
+            std::cout << "[MAPPER] Cleaning mouse buffer\n";
+
+            return;
+        }
+
         _servo_buffer.push_back(msg);
+        _servo_count++;
     };
 
     void lidarCallback(const scanner::lidar_data &msg) {
@@ -53,16 +70,13 @@ public:
     };
     
     void mouseCallback(const mouse_sensor::robot_position &msg) {
-       /* if(_mouse_buffer.size() > 0 && (msg.x == _mouse_buffer.back().x && msg.y == _mouse_buffer.back().y && msg.z == _mouse_buffer.back().z)) {
-            return;
-        }*/
         if(ros::Time::now().toSec() - _mouse_timer_start.toSec() > 3) {
             _mouse_timer_start = ros::Time::now();
 
             _mouse_buffer.clear();
             _mouse_count = 0;
 
-            std::cout << "[MAPPER] Clearing mouse buffer\n";
+            std::cout << "[MAPPER] Cleaning mouse buffer\n";
 
             return;
         }
@@ -88,6 +102,7 @@ public:
         // [TODO] eixo Z e sincronizar mensagens
         double x = 0.0;
         double y = 0.0;
+        double z = 0.0;
         scanner::lidar_data aux;
         int num_int = _lidar_count;
         for(int i = 0; i < num_int; i++) {
@@ -102,13 +117,19 @@ public:
 
                 // Procurar pelo elemento de mouse recebido no mesmo instante:
                 std::vector<mouse_sensor::robot_position> curr_mouse_buffer = _mouse_buffer;
+                std::vector<servo_ctr::servo_angle> curr_servo_buffer = _servo_buffer;
                 double dx_robot = 0.0;
                 double dy_robot = 0.0;
                 double dz_robot = 0.0;
+                double phi = 0.0;
                 int num_mouse_data = curr_mouse_buffer.size();
+                int num_servo_data = curr_servo_buffer.size();
                 // TODO: tratar caso de um só pacote: o pacote inicial nunca é apagado
                 // Guardar na classe a posição atual do robô para o caso de não ter pacotes
                 // ou tirar filtro de pacotes
+                
+                //Iterar sobre os dados do mouse para escolher o adequado para o scan do lidar
+                // ou interpolar
                 for(int k = num_mouse_data-1; k > 0; k--) {
                     if(curr_mouse_buffer[k].time == time) {
                         dx_robot = curr_mouse_buffer[k].x;
@@ -136,9 +157,28 @@ public:
                     //_mouse_count--;
                 }
 
-                x = d*sin(theta);
-                y = d*cos(theta);
-                msg->points.push_back(pcl::PointXYZ(x+dx_robot, y+dy_robot, 1.0+dz_robot));
+                //Iterar sobre os dados do servo para escolher o adequado para o scan do lidar
+                // ou interpolar
+                for(int k = num_servo_data-1; k > 0; k--) {
+                    if(curr_servo_buffer[k].time == time) {
+                        phi = curr_servo_buffer[k].angle_radians;
+                        break;
+                    } else if(curr_servo_buffer[k].time > time && curr_servo_buffer[k-1].time < time) {
+                        double delta_time = curr_servo_buffer[k].time-curr_servo_buffer[k-1].time;
+                        double diff_time = time-curr_servo_buffer[k-1].time;
+                        double ang_coef = (curr_servo_buffer[k].angle_radians-curr_servo_buffer[k-1].angle_radians)/delta_time;
+                        
+                        phi = ang_coef*diff_time+curr_servo_buffer[k-1].angle_radians;
+                        break;
+                    } 
+
+                    curr_servo_buffer.pop_back();  
+                }
+
+                x = d*sin(theta)+dx_robot;
+                y = d*cos(theta)+dy_robot;
+                z = 0.15+dz_robot;
+                msg->points.push_back(pcl::PointXYZ(x, cos(phi)*y-sin(phi)*z, sin(phi)*y+cos(phi)*z));
                 aux.range.pop_back();
                 aux.angle.pop_back();
             }

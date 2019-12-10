@@ -36,6 +36,7 @@ int main (int argc, char **argv) {
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "transform_reference", "map")); 
         std::cout << "Numero de pacotes lidar: " << map.getLidarCount() << "\n";
         std::cout << "Numero de pacotes mouse: " << map.getMouseCount() << "\n";
+        std::cout << "Numero de pacotes servo: " << map.getServoCount() << "\n";
         pcl::PointCloud<pcl::PointXYZ>::Ptr msg = map.getPointCloudMessage(&msgIsEmpty);
         if(!msgIsEmpty) {
             mapper_pub.publish(msg);
