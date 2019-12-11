@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
     RobotInput* inputGrabber = new RobotInput();
     std::thread inputThread(&RobotInput::run, inputGrabber);
 
-    ros::Publisher velocityPublisher = nodeHandle.advertise<robot_input::velocity_message>("robot_velocity", 1000);
-    ros::Rate loop_rate(60);
+    ros::Publisher velocityPublisher = nodeHandle.advertise<robot_input::velocity_message>("/robot_velocity", 1000);
+    ros::Rate loop_rate(10);
 
     while(ros::ok()) {
 

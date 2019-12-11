@@ -18,12 +18,14 @@ void RobotInput::setRunning(bool running){
 }
 
 void RobotInput::updateVelocity(){
-    if(~(_commands.forward^_commands.backward)){
+    if(_commands.forward && _commands.backward){
         _velocity.y = 0;
     }else if(_commands.forward){
         _velocity.y = RobotInput::VELOCITY;
-    }else{
+    }else if(_commands.backward){
         _velocity.y = -RobotInput::VELOCITY;
+    }else{
+        _velocity.y = 0;
     }
 
     if(~(_commands.right^_commands.left)){
@@ -42,14 +44,15 @@ void RobotInput::updateVelocity(){
         _velocity.z = -RobotInput::VELOCITY;
     }
 
-    if(~(_commands.ang_right^_commands.ang_left)){
+    if(_commands.ang_right && _commands.ang_left){
         _velocity.ang = 0;
     }else if(_commands.ang_right){
         _velocity.ang = RobotInput::ANGULAR_VELOCITY;
-    }else{
+    }else if(_commands.ang_left){
         _velocity.ang = -RobotInput::ANGULAR_VELOCITY;
+    }else{
+        _velocity.ang = 0;
     }
-    
 }
 
 RobotInput::RobotInput(){
@@ -113,8 +116,10 @@ void RobotInput::run(){
             update_velocity = true;
             if(event.type == KeyPress){
                 pressed = true;
-            }else{
+            }else if(event.type == KeyRelease){
                 pressed = false;
+            }else{
+                continue;
             }
             switch(event.xkey.keycode){
                 case RobotInput::forward_keycode:
@@ -181,10 +186,7 @@ void RobotInput::run(){
                     break;
             }
         }
-
-        if(update_velocity){
-            updateVelocity();
-        }
+        printf("Commands: {fw:%s; bw:%s; left:%s; right:%s; up:%s; down:%s; ang_left:%s; ang_right:%s}\n", _commands.forward ? "true" : "false", _commands.backward ? "true" : "false", _commands.left ? "true" : "false", _commands.right ? "true" : "false", _commands.up ? "true" : "false", _commands.down ? "true" : "false", _commands.ang_left ? "true" : "false", _commands.ang_right ? "true" : "false");
         _run_mutex.lock();
     }
     forceQuit();
@@ -193,12 +195,14 @@ void RobotInput::run(){
 }
 
 
-robot_input::velocity_message RobotInput::getVelocityMsg() const{
+robot_input::velocity_message RobotInput::getVelocityMsg(){
+    updateVelocity();
     robot_input::velocity_message msg;
     msg.x = _velocity.x;
     msg.y = _velocity.y;
     msg.z = _velocity.z;
     msg.ang = _velocity.ang;
+    //printf("Sent new message: {%lf, %lf, %lf, %lf}\n", msg.x, msg.y, msg.z, msg.ang);
     return msg;
 }
 
