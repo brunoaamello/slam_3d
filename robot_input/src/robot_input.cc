@@ -186,7 +186,7 @@ void RobotInput::run(){
                     break;
             }
         }
-        printf("Commands: {fw:%s; bw:%s; left:%s; right:%s; up:%s; down:%s; ang_left:%s; ang_right:%s}\n", _commands.forward ? "true" : "false", _commands.backward ? "true" : "false", _commands.left ? "true" : "false", _commands.right ? "true" : "false", _commands.up ? "true" : "false", _commands.down ? "true" : "false", _commands.ang_left ? "true" : "false", _commands.ang_right ? "true" : "false");
+        //printf("Commands: {fw:%s; bw:%s; left:%s; right:%s; up:%s; down:%s; ang_left:%s; ang_right:%s}\n", _commands.forward ? "true" : "false", _commands.backward ? "true" : "false", _commands.left ? "true" : "false", _commands.right ? "true" : "false", _commands.up ? "true" : "false", _commands.down ? "true" : "false", _commands.ang_left ? "true" : "false", _commands.ang_right ? "true" : "false");
         _run_mutex.lock();
     }
     forceQuit();

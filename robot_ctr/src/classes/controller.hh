@@ -86,8 +86,8 @@ public:
             exit(-1);
         }
         
-        _left = new Motor(27, 28);
-        _right = new Motor(23, 25);
+        _left = new Motor(27, 28, true);
+        _right = new Motor(23, 25, false);
         
         _left->stop();
         _right->stop();

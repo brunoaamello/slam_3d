@@ -103,7 +103,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES servo_ctr
+ # LIBRARIES local_acc
   CATKIN_DEPENDS roscpp scanner sensor_msgs message_runtime
 #  DEPENDS system_lib
 )
@@ -115,24 +115,24 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/servo_ctr.cpp
-# )
+#add_library(local_acc
+#   src/accel.cc
+#)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_dependencies(local_acc ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/servo_ctr_node.cpp)
+add_executable(${PROJECT_NAME}_node src/ctr.cc)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -142,12 +142,17 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
+#target_link_libraries(local_acc
 #   ${catkin_LIBRARIES}
-# )
+#   MPU6050
+#)
+target_link_libraries(${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+   MPU6050
+)
 
 #############
 ## Install ##
@@ -204,6 +209,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(ctr src/ctr.cc)
-target_link_libraries(ctr ${catkin_LIBRARIES})
-add_dependencies(ctr servo_ctr_generate_messages_cpp)
+#add_executable(ctr src/ctr.cc)
+#target_link_libraries(ctr ${catkin_LIBRARIES})
+#add_dependencies(ctr servo_ctr_generate_messages_cpp)
